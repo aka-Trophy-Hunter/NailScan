@@ -75,7 +75,7 @@ def run_segmentation(image_path: str, out_dir: str):
             "--project", out_dir,
             "--name", "run",
             "--exist-ok",
-            "--conf-thres", "0.65",
+            "--conf-thres", "0.85",
             "--save-txt",
         ],
         cwd=str(YOLO_DIR),
@@ -112,6 +112,7 @@ with st.spinner("Setting up models..."):
     classifier_model = load_classifier()
 
 file = st.file_uploader("Upload a photo of your nail(s)", type=["jpg", "jpeg", "png"])
+st.caption("Works best with real, close-up photos of a nail. Not designed for illustrations, cartoons, or unrelated images.")
 
 if file is None:
     st.info("Please upload an image to begin.")

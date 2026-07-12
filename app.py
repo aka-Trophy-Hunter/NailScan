@@ -104,7 +104,7 @@ def run_segmentation(image_path: str, out_dir: str):
     return image_result
 
 
-st.image("11.jpg", use_column_width=True)
+st.image("22222.jpg", use_column_width=True)
 st.title("NailScan")
 st.caption("Stage 1: nail detection & segmentation. Disease classification is coming soon.")
 

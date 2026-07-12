@@ -75,7 +75,7 @@ def run_segmentation(image_path: str, out_dir: str):
             "--project", out_dir,
             "--name", "run",
             "--exist-ok",
-            "--conf-thres", "0.4",
+            "--conf-thres", "0.65",
             "--save-txt",
         ],
         cwd=str(YOLO_DIR),

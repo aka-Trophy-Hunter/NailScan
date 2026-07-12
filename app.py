@@ -25,7 +25,7 @@ def setup_yolov5():
 
 def run_segmentation(image_path: str, out_dir: str):
     script = YOLO_DIR / "segment" / "predict.py"
-    subprocess.run(
+    result = subprocess.run(
         [
             "python", str(script),
             "--weights", str(WEIGHTS_PATH),
@@ -35,9 +35,13 @@ def run_segmentation(image_path: str, out_dir: str):
             "--exist-ok",
             "--conf-thres", "0.4",
         ],
-        check=True,
         cwd=str(YOLO_DIR),
+        capture_output=True,
+        text=True,
     )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr[-3000:] or result.stdout[-3000:])
+
     result_dir = Path(out_dir) / "run"
     for f in result_dir.glob("*"):
         if f.suffix.lower() in [".jpg", ".jpeg", ".png"]:
@@ -66,8 +70,9 @@ else:
         with st.spinner("Detecting and segmenting nail region..."):
             try:
                 result_path = run_segmentation(input_path, tmpdir + "/out")
-            except subprocess.CalledProcessError as e:
-                st.error(f"Segmentation failed: {e}")
+            except RuntimeError as e:
+                st.error("Segmentation failed. Full error below:")
+                st.code(str(e))
                 result_path = None
 
         if result_path:

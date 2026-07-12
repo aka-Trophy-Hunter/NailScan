@@ -13,8 +13,6 @@ from torchvision import transforms
 from torchvision.models import resnet152
 from PIL import Image
 
-st.image("11.jpg", use_column_width=True)
-
 REPO_ROOT = Path(__file__).parent
 YOLO_DIR = REPO_ROOT / "yolov5"
 WEIGHTS_PATH = REPO_ROOT / "models" / "best.pt"
@@ -106,6 +104,7 @@ def run_segmentation(image_path: str, out_dir: str):
     return image_result
 
 
+st.image("11.jpg", use_column_width=True)
 st.title("NailScan")
 st.caption("Stage 1: nail detection & segmentation. Disease classification is coming soon.")
 

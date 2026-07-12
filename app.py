@@ -76,6 +76,7 @@ def run_segmentation(image_path: str, out_dir: str):
             "--name", "run",
             "--exist-ok",
             "--conf-thres", "0.4",
+            "--save-txt",
         ],
         cwd=str(YOLO_DIR),
         capture_output=True,
@@ -85,10 +86,22 @@ def run_segmentation(image_path: str, out_dir: str):
         raise RuntimeError(result.stderr[-3000:] or result.stdout[-3000:])
 
     result_dir = Path(out_dir) / "run"
+    image_result = None
     for f in result_dir.glob("*"):
         if f.suffix.lower() in [".jpg", ".jpeg", ".png"]:
-            return f
-    return None
+            image_result = f
+
+    # A detection only counts if YOLO actually wrote a labels file with content.
+    labels_dir = result_dir / "labels"
+    n_detections = 0
+    if labels_dir.exists():
+        for txt_file in labels_dir.glob("*.txt"):
+            with open(txt_file) as f:
+                n_detections += len(f.readlines())
+
+    if n_detections == 0:
+        return None
+    return image_result
 
 
 st.title("NailScan")
@@ -121,15 +134,21 @@ else:
         if result_path:
             st.image(str(result_path), caption="Detected nail region", use_column_width=True)
             st.success("Nail region detected successfully.")
+
+            with st.spinner("Analyzing nail condition..."):
+                predicted_class, confidence = classify_nail(image, classifier_model)
+
+            if confidence < 40:
+                st.warning(
+                    f"Best guess: {predicted_class} ({confidence:.1f}% confidence) — "
+                    "this is too low-confidence to be reliable. Try a clearer, closer photo of just the nail."
+                )
+            else:
+                st.subheader(f"Prediction: {predicted_class}")
+                st.write(f"Confidence: {confidence:.1f}%")
+                st.caption(
+                    "This is an automated screening tool trained on a public dataset, not a medical diagnosis. "
+                    "Please consult a dermatologist for confirmation."
+                )
         else:
-            st.warning("No nail detected in this image. Try a clearer, closer photo.")
-
-    with st.spinner("Analyzing nail condition..."):
-        predicted_class, confidence = classify_nail(image, classifier_model)
-
-    st.subheader(f"Prediction: {predicted_class}")
-    st.write(f"Confidence: {confidence:.1f}%")
-    st.caption(
-        "This is an automated screening tool trained on a public dataset, not a medical diagnosis. "
-        "Please consult a dermatologist for confirmation."
-    )
+            st.warning("No nail detected in this image. Try a clearer, closer photo of just the nail.")

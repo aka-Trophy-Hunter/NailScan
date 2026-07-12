@@ -50,7 +50,7 @@ def run_segmentation(image_path: str, out_dir: str):
     return None
 
 
-st.title("Nail Condition Analyzer")
+st.title("NailScan")
 st.caption("Stage 1: nail detection & segmentation. Disease classification is coming soon.")
 
 with st.spinner("Setting up model..."):

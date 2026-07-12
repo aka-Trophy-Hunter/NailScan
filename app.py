@@ -1,6 +1,7 @@
 import os
 import subprocess
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 
@@ -27,7 +28,7 @@ def run_segmentation(image_path: str, out_dir: str):
     script = YOLO_DIR / "segment" / "predict.py"
     result = subprocess.run(
         [
-            "python", str(script),
+            sys.executable, str(script),
             "--weights", str(WEIGHTS_PATH),
             "--source", image_path,
             "--project", out_dir,

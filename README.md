@@ -1,4 +1,5 @@
-# NailScan
+# NailScan: Nail Condition Analyzer
+
 
 An AI-powered nail health screening tool. Upload a photo of a nail and the app:
 
